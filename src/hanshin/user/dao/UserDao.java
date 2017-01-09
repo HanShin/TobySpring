@@ -1,6 +1,7 @@
 package hanshin.user.dao;
 
 import hanshin.user.domain.User;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.sql.*;
 
@@ -9,26 +10,13 @@ import java.sql.*;
  */
 public class UserDao {
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao dao = new UserDao();
-        User user = new User();
-        user.setId("Ryumsos");
-        user.setName("한신");
-        user.setPassword("1234");
-
-        dao.add(user);
-
-        System.out.println(user.getId() + " 등록 성공");
-
-        User user2 = dao.get(user.getId());
-        System.out.println(user2.getName());
-        System.out.print(user2.getPassword());
-
-        System.out.println(user2.getId());
+    private ConnectionMaker connectionMaker;
+    UserDao(ConnectionMaker connectionMaker){
+        this.connectionMaker = connectionMaker;
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = connectionMaker.makeConnection();
 
         PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values (?,?,?)");
         ps.setString(1, user.getId());
@@ -43,7 +31,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = connectionMaker.makeConnection();
 
         PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
 
@@ -64,8 +52,4 @@ public class UserDao {
 
     }
 
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
-        return DriverManager.getConnection("jdbc:mysql://localhost/hanshintoby", "root", "12345678");
-    }
 }
