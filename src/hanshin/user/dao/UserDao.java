@@ -1,22 +1,30 @@
 package hanshin.user.dao;
 
 import hanshin.user.domain.User;
-import sun.java2d.pipe.SpanShapeRenderer;
 
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Created by shin on 2017. 1. 5..
  */
 public class UserDao {
+    private DataSource dataSource;
 
-    private ConnectionMaker connectionMaker;
-    UserDao(ConnectionMaker connectionMaker){
-        this.connectionMaker = connectionMaker;
+    public void setDataSource(DataSource dataSource){
+        this.dataSource = dataSource;
     }
+//    private ConnectionMaker connectionMaker;
 
-    public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = connectionMaker.makeConnection();
+//    public void setConnectionMaker(ConnectionMaker connectionMaker) {
+//        this.connectionMaker = connectionMaker;
+//    }
+
+    public void add(User user) throws SQLException {
+        Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values (?,?,?)");
         ps.setString(1, user.getId());
@@ -31,7 +39,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
 
